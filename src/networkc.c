@@ -10,10 +10,9 @@
 #include <string.h>
     
 #ifdef OS_WIN
-#include <winsock.h>
+#include <winsock2.h>
 #else
 #include <unistd.h>
-    
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -57,7 +56,7 @@ int main(void)
 
 #ifdef OS_WIN
 
-    WSADATA wsaData;   // if this doesn't work
+    WSAData wsaData;   // if this doesn't work
     //WSAData wsaData; // then try this instead
 
     // MAKEWORD(1,1) for Winsock 1.1, MAKEWORD(2,0) for Winsock 2.0:
