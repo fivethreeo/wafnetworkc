@@ -10,9 +10,12 @@
 #include <string.h>
     
 #ifdef OS_WIN
+  
 #include <winsock2.h>
 #include <Ws2tcpip.h>
+  
 #else
+  
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -57,10 +60,7 @@ int main(void)
 
 #ifdef OS_WIN
 
-    WSADATA wsaData;   // if this doesn't work
-    //WSAData wsaData; // then try this instead
-
-    // MAKEWORD(1,1) for Winsock 1.1, MAKEWORD(2,0) for Winsock 2.0:
+    WSADATA wsaData;
 
     if (WSAStartup(MAKEWORD(2,0), &wsaData) != 0) {
         fprintf(stderr, "WSAStartup failed.\n");
@@ -89,10 +89,14 @@ int main(void)
         }
         
         // lose the pesky "address already in use" error message
-        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, (char *) &yes, sizeof(int));
 
         if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
-            close(listener);
+#ifdef OS_WIN
+            closesocket(i); // bye!
+#else
+            close(i); // bye!
+#endif                               
             continue;
         }
 
@@ -161,7 +165,12 @@ int main(void)
                         } else {
                             perror("recv");
                         }
+
+#ifdef OS_WIN
+                        closesocket(i); // bye!
+#else
                         close(i); // bye!
+#endif                               
                         FD_CLR(i, &master); // remove from master set
                     } else {
                         // we got some data from a client
@@ -183,7 +192,7 @@ int main(void)
     } // END for(;;)--and you thought it would never end!
     
 #ifdef OS_WIN
-    WSACleanup()
+    WSACleanup();
 #endif       
     return 0;
 }
