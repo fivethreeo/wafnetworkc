@@ -3,10 +3,10 @@ import os
 sys.path.append(os.path.abspath('waf/waflib/extras'))
 
 def options(opt):
-    opt.load('c msvc boost')
+    opt.load('c msvc')
     
 def configure(conf):
-    conf.load('c msvc boost')
+    conf.load('c msvc')
     
     conf.env['MSVC_TARGETS'] = ['x86']
     
@@ -26,5 +26,5 @@ def build(bld):
        features='c',
        source='src/networkc.c',
        target='networkc',
-       use='MSVC BOOST'
+       use='MSVC'
     )
