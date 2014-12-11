@@ -30,7 +30,7 @@ typedef struct
   // allows us to optimize the code if we're just signaling.
 } pthread_cond_t;
 
-void pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *);
+void pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *attr);
 
 void pthread_cond_wait (pthread_cond_t *cv, pthread_mutex_t *external_mutex);
 

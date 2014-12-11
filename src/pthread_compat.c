@@ -1,11 +1,11 @@
 #include "pthread_compat.h"
 
 void 
-pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *)
+pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *attr)
 {
   cv->waiters_count_ = 0;
   cv->was_broadcast_ = 0;
-  cv->sema_ = (HANDLE)CreateSemaphore (NULL,       // no security
+  cv->sema_ = CreateSemaphore (NULL,       // no security
                                 0,          // initially 0
                                 0x7fffffff, // max count
                                 NULL);      // unnamed 
