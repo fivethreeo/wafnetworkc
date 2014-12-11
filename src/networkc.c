@@ -1,63 +1,12 @@
-#if defined(_WIN32) || defined(WIN32) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__BORLANDC__)
-#define OS_WIN
-#else
-#define OS_LINUX
-#endif
 
 /*
 ** selectserver.c -- a cheezy multiperson chat server
 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "networkc.h"
 
-#if defined(OS_LINUX)
-
-//Headers
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <pthread.h>
-
-//Data types
-#define MUTEX pthread_mutex_t
-
-#ifndef EBUSY
-#define EBUSY 16 // resource busy
+#ifdef OS_WIN
+#include "pthread_compat.h"
 #endif
-
-//Macros
-#define MUTEX_INIT(mutex) (0 == pthread_mutex_init (&(mutex), NULL))
-#define MUTEX_DESTROY(mutex) (0 == pthread_mutex_destroy(&(mutex)))
-#define MUTEX_LOCK(mutex) (0 == pthread_mutex_lock (&(mutex)))
-#define MUTEX_UNLOCK(mutex) (0 == pthread_mutex_unlock (&(mutex)))
-#define MUTEX_TRYLOCK(mutex) (EBUSY == pthread_mutex_trylock (&(mutex)))
-
-#elif defined(OS_WIN)
-
-//Headers
-#include <windows.h>
-#include <process.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-
-//Data types
-#define MUTEX HANDLE
-
-//Macros
-#define MUTEX_INIT(mutex) (NULL != ((mutex) = CreateMutex (0, FALSE, 0)))
-#define MUTEX_DESTROY(mutex) (0 != CloseHandle((mutex)))
-#define MUTEX_LOCK(mutex) (WAIT_FAILED == WaitForSingleObject ((mutex), INFINITE))
-#define MUTEX_UNLOCK(mutex) (0 == ReleaseMutex ((mutex)))
-#define MUTEX_TRYLOCK(mutex) (WAIT_TIMEOUT == WaitForSingleObject((mutex), IGNORE))
-
-#endif
-
-#define PORT "9034"   // port we're listening on
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -125,9 +74,9 @@ int main(void)
 
         if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
 #ifdef OS_WIN
-            closesocket(i); // bye!
+            closesocket(listener); // bye!
 #else
-            close(i); // bye!
+            close(listener); // bye!
 #endif                               
             continue;
         }

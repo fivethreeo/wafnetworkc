@@ -24,7 +24,7 @@ def build(bld):
 
     tg = bld.program(
        features='c',
-       source='src/networkc.c',
+       source='src/networkc.c src/pthread_compat.c',
        target='networkc',
        use='MSVC'
     )
