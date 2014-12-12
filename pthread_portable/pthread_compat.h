@@ -9,11 +9,12 @@ typedef CRITICAL_SECTION pthread_mutex_t;
 
 typedef int pthread_condattr_t;
 
-  enum {
+enum {
     SIGNAL = 0,
     BROADCAST = 1,
     MAX_EVENTS = 2
-  };
+};
+
 typedef struct
 {
   u_int waiters_count_;
@@ -21,7 +22,6 @@ typedef struct
   
   CRITICAL_SECTION waiters_count_lock_;
   // Serialize access to <waiters_count_>.
-
 
   HANDLE events_[MAX_EVENTS];
   // Signal and broadcast event HANDLEs.
