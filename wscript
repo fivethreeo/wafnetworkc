@@ -1,6 +1,7 @@
 import sys
 import os
-sys.path.append(os.path.abspath('waf/waflib/extras'))
+
+pthread_type = 'pthread_portable'
 
 def options(opt):
     opt.load('c msvc')
@@ -14,17 +15,15 @@ def configure(conf):
     conf.env.LIB_MSVC = LIB_MSVC.split(" ")
     conf.check_libs_msvc(LIB_MSVC)
     
-    conf.check_boost(stlib='thread system filesystem')
-
-    conf.env.INCLUDES += [os.path.abspath('include')]
+    conf.env.INCLUDES += [os.path.abspath(pthread_type)]
     
     conf.env.CXXFLAGS = '/EHsc'
     
 def build(bld):
-
+    
     tg = bld.program(
        features='c',
-       source='src/networkc.c src/pthread_compat.c',
+       source='networkc/networkc.c %s/pthread_compat.c' % pthread_type,
        target='networkc',
        use='MSVC'
     )

@@ -1,6 +1,6 @@
 #include "pthread_compat.h"
 
-void 
+int 
 pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *attr)
 {
   cv->waiters_count_ = 0;
@@ -14,10 +14,11 @@ pthread_cond_init (pthread_cond_t *cv, const pthread_condattr_t *attr)
                                    FALSE, // auto-reset
                                    FALSE, // non-signaled initially
                                    NULL); // unnamed
+  return 0;
 }
 
 
-void
+int
 pthread_cond_wait (pthread_cond_t *cv, 
                    pthread_mutex_t *external_mutex)
 {
@@ -54,9 +55,11 @@ pthread_cond_wait (pthread_cond_t *cv,
     // Always regain the external mutex since that's the guarantee we
     // give to our callers. 
     WaitForSingleObject (*external_mutex, INFINITE);
+    
+  return 0;
 }
 
-void
+int
 pthread_cond_signal (pthread_cond_t *cv)
 {
   int have_waiters;
@@ -68,9 +71,11 @@ pthread_cond_signal (pthread_cond_t *cv)
   // If there aren't any waiters, then this is a no-op.  
   if (have_waiters)
     ReleaseSemaphore (cv->sema_, 1, 0);
+    
+  return 0;
 }
 
-void
+int
 pthread_cond_broadcast (pthread_cond_t *cv)
 {
   int have_waiters;
@@ -102,4 +107,6 @@ pthread_cond_broadcast (pthread_cond_t *cv)
   }
   else
     LeaveCriticalSection (&cv->waiters_count_lock_);
+    
+  return 0;
 }
