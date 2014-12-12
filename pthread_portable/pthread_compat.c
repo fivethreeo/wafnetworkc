@@ -39,7 +39,7 @@ pthread_cond_wait (pthread_cond_t *cv,
 
   // Wait for either event to become signaled due to <pthread_cond_signal>
   // being called or <pthread_cond_broadcast> being called.
-  result = WaitForMultipleObjects (2, ev->events_, FALSE, INFINITE);
+  result = WaitForMultipleObjects (2, cv->events_, FALSE, INFINITE);
 
   EnterCriticalSection (&cv->waiters_count_lock_);
   cv->waiters_count_--;
@@ -55,7 +55,7 @@ pthread_cond_wait (pthread_cond_t *cv,
     ResetEvent (cv->events_[BROADCAST]); 
 
   // Reacquire the <external_mutex>.
-  EnterCriticalSection (external_mutex, INFINITE);
+  EnterCriticalSection (external_mutex);
 
   return 0;
 }
